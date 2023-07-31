@@ -28,8 +28,15 @@ jobs:
       - name: Flutter build web
         run: flutter build web
 
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build clang libgtk-3-dev
+
       - name: Flutter build Linux
-        run: flutter config --enable-linux-desktop & flutter build linux
+        run: |
+          flutter config --enable-linux-desktop
+          flutter build linux
 
   build_macos:
     runs-on: macos-latest
@@ -40,6 +47,6 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
-
+      - run: flutter pub get
       - run: flutter config --enable-macos-desktop
       - run: flutter build macos
