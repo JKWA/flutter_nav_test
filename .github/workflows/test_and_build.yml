@@ -1,19 +1,21 @@
-name: Deploy to Firebase Hosting on merge
+name: Test and Build
+
 'on':
   push:
     branches:
       - main
+
 jobs:
-  build_and_deploy:
+  build_android_web_linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.10.6'
-          
+
       - name: Flutter get packages
         run: flutter pub get 
 
@@ -22,19 +24,22 @@ jobs:
 
       - name: Flutter build Android
         run: flutter build apk
-        
+
       - name: Flutter build web
         run: flutter build web
-
-      - name: Flutter build iOS
-        run: flutter build ios
-
-      - name: Flutter build Windows
-        run: flutter config --enable-windows-desktop & flutter build windows
 
       - name: Flutter build Linux
         run: flutter config --enable-linux-desktop & flutter build linux
 
-      - name: Flutter build macOS
-        run: flutter config --enable-macos-desktop & flutter build macos
+  build_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
 
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+
+      - run: flutter config --enable-macos-desktop
+      - run: flutter build macos
