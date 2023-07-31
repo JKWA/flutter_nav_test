@@ -17,7 +17,7 @@ jobs:
           flutter-version: '3.10.6'
 
       - name: Flutter get packages
-        run: flutter pub get 
+        run: flutter pub get
 
       - name: Run tests
         run: flutter test
@@ -47,6 +47,26 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
+
       - run: flutter pub get
       - run: flutter config --enable-macos-desktop
       - run: flutter build macos
+
+      # Create a new release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      # Upload the macOS build artifact to the created release
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/macos/Build/Products/Release/YourAppName.app
+          asset_name: YourAppName.app
+          asset_content_type: application/zip
