@@ -10,29 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.10.6'
-
       - name: Flutter get packages
         run: flutter pub get
-
       - name: Run tests
         run: flutter test
-
       - name: Flutter build Android
         run: flutter build apk
-
       - name: Flutter build web
         run: flutter build web
-
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build clang libgtk-3-dev
-
       - name: Flutter build Linux
         run: |
           flutter config --enable-linux-desktop
@@ -42,29 +35,29 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           architecture: x64
-
       - run: flutter pub get
       - run: flutter config --enable-macos-desktop
       - run: flutter build macos
-
       # Create a new release
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-
       # Upload the macOS build artifact to the created release
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/macos/Build/Products/Release/YourAppName.app
